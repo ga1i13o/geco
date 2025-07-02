@@ -1,0 +1,2 @@
+model: 'sd15ema_dinov2'
+crop_feats: True

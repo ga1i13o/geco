@@ -1,0 +1,8 @@
+name: 'pfpascal'
+dataset_path:  '<your_dataset_path>/PF-dataset-PASCAL' #path to spair dataset
+save_path: '<your_precomputed_features_path>'
+save_path_masks: '<your_precomputed_masks_path>'
+hydra:
+  output_subdir: null
+sup: sup_original # ['sup_augmented', 'sup_original']
+cat: all

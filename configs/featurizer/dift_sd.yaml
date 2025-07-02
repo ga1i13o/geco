@@ -1,0 +1,6 @@
+model: 'dift_sd' 
+img_size: [768, 768] #in the order of [width, height], resize input image to [w, h] before fed into diffusion model, if set to 0, will stick to the original input size. by default is 768x768.
+t: 261 #t for diffusion
+up_ft_index: 2 #which upsampling block to extract the ft map
+ensemble_size: 1 #ensemble size for getting an image ft map
+all_cats: none

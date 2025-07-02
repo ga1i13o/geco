@@ -1,0 +1,6 @@
+name: 'pascalparts'
+dataset_path: '<your_dataset_path>/PASCAL-VOC/' #path to spair dataset
+save_path: '<your_precomputed_features_path>'
+hydra:
+  output_subdir: null
+sup: sup_original # ['sup_augmented', 'sup_original']

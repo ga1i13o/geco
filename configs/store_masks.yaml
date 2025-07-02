@@ -1,0 +1,7 @@
+defaults:
+  - dataset/cub # ['apk', 'cub', 'spair', 'pfpascal']
+
+dataset:
+  split: 'train'
+path_model_seg: <path-model-seg>
+model_seg_name: sam

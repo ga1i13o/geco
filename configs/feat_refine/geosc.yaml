@@ -1,0 +1,11 @@
+model: GeoSc
+model_out_path: '<model-output-path>'
+feature_dims: [640,1280,1280,768]
+projection_dim: 768
+# in_dim: 3968
+feat_map_dropout: 0.2
+
+init:
+  id: geosc
+  epoch: 856
+  url: "https://github.com/Junyi42/GeoAware-SC/blob/master/results_spair/best_856.PTH"

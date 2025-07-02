@@ -1,0 +1,4 @@
+defaults:
+  - dataset/pascalparts
+  - featurizer/dinov2lora
+  - classifier/nearest_centroid@sup_classifier

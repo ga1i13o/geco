@@ -1,0 +1,12 @@
+name: 'cub'
+dataset_path: '<your_dataset_path>'
+dataset_path_annotations: '<your_dataset_path_cubannotations>'
+n_pairs: 10000
+save_path: '<your_precomputed_features_path>'
+save_path_masks: '<your_precomputed_masks_path>'
+hydra:
+  output_subdir: null
+sup: sup_augmented # ['sup_augmented', 'sup_original']
+borders_cut: True
+flip_aug: True
+cat: bird

@@ -1,0 +1,5 @@
+model: 'dinov2'
+model_size: 'dinov2_vitb14'  # ['dinov2_vits14', 'dinov2_vitb14']
+img_size: [518, 518] #in the order of [width, height], resize input image to [w, h] before fed into the model, if set to 0, will stick to the original input size.
+up_ft_index: 1 #which upsampling block to extract the ft map
+log_bin: False

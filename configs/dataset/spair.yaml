@@ -1,0 +1,9 @@
+name: 'spair'
+dataset_path:  '<your_dataset_path>/SPair-71k' #path to spair dataset
+save_path: '<your_precomputed_features_path>'
+save_path_masks: '<your_precomputed_masks_path>'
+hydra:
+  output_subdir: null
+sup: sup_augmented # ['sup_augmented', 'sup_original']
+flip_aug: True
+cat: all

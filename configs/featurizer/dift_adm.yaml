@@ -1,0 +1,5 @@
+model: 'dift_adm' 
+img_size: [512, 512] #in the order of [width, height], resize input image to [w, h] before fed into diffusion model, if set to 0, will stick to the original input size. 
+t: 101 #t for diffusion
+up_ft_index: 4 #which upsampling block to extract the ft map
+ensemble_size: 1 #ensemble size for getting an image ft map

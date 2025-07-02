@@ -1,0 +1,5 @@
+defaults:
+  - dataset/spair # ['apk', 'cub', 'spair', 'pfpascal']
+  - featurizer/dinov2 # which model to use ['dift_sd', 'dift_adm', 'open_clip', 'dino', 'dinov2', 'sd15ema_dinov2', 'dinov2lora']
+
+model_seg_name: sam

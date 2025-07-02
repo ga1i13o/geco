@@ -1,0 +1,4 @@
+defaults:
+  - dataset/pascalparts
+  - featurizer/dinov2lora # which model to use ['dift_sd', 'dift_adm', 'open_clip', 'dino', 'dinov2', 'sd15ema_dinov2', 'dinov2lora']
+  - classifier/nearest_centroid@sup_classifier

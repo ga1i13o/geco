@@ -1,0 +1,23 @@
+defaults:
+  - featurizer/dinov2lora # which model to use ['dift_sd', 'dift_adm', 'open_clip', 'dino', 'dinov2', 'sd15ema_dinov2', 'dinov2lora']
+  - dataset/apk # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset/spair@dataset2 # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset/pfpascal@dataset3 # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset/pfpascal@datasetgeneralization # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset/spair@datasetgeneralization2 # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset/cub@datasetgeneralization3 # ['apk', 'cub', 'spair', 'pfpascal']
+  - train_setting_default
+
+# fix number of elements for each category in the dataset
+dataset:
+  num_el: 800
+dataset2:
+  num_el: 800
+dataset3:
+  num_el: 800
+
+## for evaluating PCK
+upsample: True
+alpha_bbox: False
+n_pairs_eval_pck: 10000
+
