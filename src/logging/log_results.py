@@ -14,13 +14,16 @@ def init_wandb(cfg, prefix=''):
             name = name+cfg['dataset']['sup']
         if 'dataset2' in cfg:
             name = name+'+'+cfg['dataset2']['name']
-            name = name+cfg['dataset2']['sup']
+            if 'sup' in cfg['dataset2']:
+                name = name+cfg['dataset2']['sup']
         if 'dataset3' in cfg:
             name = name+'+'+cfg['dataset3']['name']
-            name = name+cfg['dataset3']['sup']
+            if 'sup' in cfg['dataset3']:
+                name = name+cfg['dataset3']['sup']
         if 'dataset4' in cfg:
             name = name+'+'+cfg['dataset4']['name']
-            name = name+cfg['dataset4']['sup']
+            if 'sup' in cfg['dataset4']:
+                name = name+cfg['dataset4']['sup']
 
     wandb.init(entity="<your-wandb-entity>",
                 project="<your-wandb-project>",

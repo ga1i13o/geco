@@ -49,7 +49,7 @@ class MyUNet2DConditionModel(UNet2DConditionModel):
 
         # 0. center input if necessary
         if self.config.center_input_sample:
-            sample = 2 * sample - 1.0
+            sample = (2 * sample - 1.0).to(sample.dtype)
 
         # 1. time
         timesteps = timestep

@@ -77,10 +77,10 @@ class DataAugmentation(object):
                 mask = F.hflip(mask)
 
         if self.crops_size!=None:
-            i, j, h, w = self.geometric_augmentation_1.get_params(mask, scale=self.geometric_augmentation_1.scale, ratio=self.geometric_augmentation_1.ratio)
+            i, j, h, w = self.geometric_augmentation_1.get_params(mask, scale=list(self.geometric_augmentation_1.scale), ratio=list(self.geometric_augmentation_1.ratio))
             # crop the image
             if mask is not None:
-                mask = F.resized_crop(mask, i, j, h, w, (self.crops_size, self.crops_size))
+                mask = F.resized_crop(mask, i, j, h, w, [self.crops_size, self.crops_size])
         return mask
 
     def __call__(self, image, data):
@@ -119,11 +119,11 @@ class DataAugmentation(object):
 
         # Crop
         if self.crops_size!=None:
-            i, j, h, w = self.geometric_augmentation_1.get_params(image, scale=self.geometric_augmentation_1.scale, ratio=self.geometric_augmentation_1.ratio)
+            i, j, h, w = self.geometric_augmentation_1.get_params(image, scale=list(self.geometric_augmentation_1.scale), ratio=list(self.geometric_augmentation_1.ratio))
             # i,j are the top left corner of the crop (firs element for top, second for left)
             # h,w are the height and width of the crop
             # crop the image
-            image = F.resized_crop(image, i, j, h, w, (self.crops_size, self.crops_size))
+            image = F.resized_crop(image, i, j, h, w, [self.crops_size, self.crops_size])
             data['imsize'] = torch.tensor((self.crops_size, self.crops_size))
             # data['bndbox'] is a list of 4 elements [xmin, ymin, xmax, ymax]
             data['bndbox'] = data['bndbox'] - np.array([j, i, j, i])

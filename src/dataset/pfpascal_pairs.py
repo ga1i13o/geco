@@ -7,6 +7,7 @@ from scipy.io import loadmat
 import os
 from src.dataset.random_utils import use_seed
 import torch.nn.functional as F
+from typing import Optional, Any
 OBJECT_CLASSES = ['aeroplane','bicycle','bird','boat','bottle','bus','car','cat',
                   'chair','cow','table','dog','horse','motorbike','person','pottedplant','sheep','sofa','train','tvmonitor']
 
@@ -32,8 +33,14 @@ class PFPascalPairsOrig(TorchDataset):
         self.return_imgs = False
         self.return_masks = False
         self.return_feats = True
+        # Initialize attributes that may be set externally
+        self.featurizer: Optional[Any] = None
+        self.featurizer_kwargs: Optional[Any] = None
+        self.model_seg: Optional[Any] = None
+        self.model_seg_name: Optional[str] = None
 
     def init_files(self):
+        assert(self.cat is not None)
         data = pd.read_csv(f'{self.root}/{self.split}_pairs_pf_pascal.csv')
         cls_ids = data.iloc[:,2].values.astype("int") - 1
         cat_id = OBJECT_CLASSES.index(self.cat)
@@ -46,6 +53,7 @@ class PFPascalPairsOrig(TorchDataset):
         self.init_files()
 
     def __len__(self):
+        assert(self.cat is not None)
         data = pd.read_csv(f'{self.root}/{self.split}_pairs_pf_pascal.csv')
         cls_ids = data.iloc[:,2].values.astype("int") - 1
         cat_id = OBJECT_CLASSES.index(self.cat)
@@ -67,17 +75,21 @@ class PFPascalPairsOrig(TorchDataset):
     
     def get_feats(self, idx):
         try:
-            src_img_name = np.array(self.subset_pairs.iloc[:,0])[idx].split('/')[-1].split('.')[0]
-            trg_img_name = np.array(self.subset_pairs.iloc[:,1])[idx].split('/')[-1].split('.')[0]
+            src_img_name = str(self.subset_pairs.iloc[idx,0]).split('/')[-1].split('.')[0]
+            trg_img_name = str(self.subset_pairs.iloc[idx,1]).split('/')[-1].split('.')[0]
             feat0 = self.get_feat(src_img_name)
             feat1 = self.get_feat(trg_img_name)
         except:
+            assert(self.featurizer is not None)
+            assert(self.featurizer_kwargs is not None)
             img0, img1 = self.get_imgs(idx)
             feat0 = self._get_feat(img0, self.featurizer, self.featurizer_kwargs)
             feat1 = self._get_feat(img1, self.featurizer, self.featurizer_kwargs)
         return feat0, feat1
     
     def get_feat(self, imname):
+        assert(self.featurizer_name is not None)
+        assert(self.cat is not None)
         path = os.path.join(self.save_path, self.name, self.featurizer_name, self.cat)
         feat = torch.load(os.path.join(path, imname+'.pth')).to(device)
         return feat
@@ -112,13 +124,16 @@ class PFPascalPairsOrig(TorchDataset):
                 torch.save(feat1.detach().cpu(), os.path.join(path, trg_img_name+'.pth'))
 
     def get_masks(self, idx):
-        src_img_name = np.array(self.subset_pairs.iloc[:,0])[idx].split('/')[-1].split('.')[0]
-        trg_img_name = np.array(self.subset_pairs.iloc[:,1])[idx].split('/')[-1].split('.')[0]
+        src_img_name = str(self.subset_pairs.iloc[idx,0]).split('/')[-1].split('.')[0]
+        trg_img_name = str(self.subset_pairs.iloc[idx,1]).split('/')[-1].split('.')[0]
         try:
+            assert(self.model_seg_name is not None)
+            assert(self.cat is not None)
             imname0, imname1 = src_img_name+'.pt', trg_img_name+'.pt'
             mask0 = torch.load(os.path.join(self.save_path_masks, self.name, self.model_seg_name, self.cat, imname0))
             mask1 = torch.load(os.path.join(self.save_path_masks, self.name, self.model_seg_name, self.cat, imname1))
         except:
+            assert(self.model_seg is not None)
             img0, img1 = self.get_imgs(idx)
             data_out = self.getitem_wo_feat(idx)
             kps0 = data_out['src_kps']
@@ -135,6 +150,7 @@ class PFPascalPairsOrig(TorchDataset):
         return mask0, mask1
     
     def store_masks(self, overwrite):
+        assert(self.model_seg is not None)
         print("saving all %s images' masks..."%self.split)
         path = os.path.join(self.save_path_masks, self.name, self.model_seg.name)
         for cat in tqdm(self.all_cats):
@@ -218,6 +234,7 @@ class PFPascalPairsOrig(TorchDataset):
             point_coords_src = get_points(point_A_coords, idx).transpose(1,0)
             point_coords_trg = get_points(point_B_coords, idx).transpose(1,0)
         else:
+            assert(self.cat is not None)
             src_anns = os.path.join(self.root, 'Annotations', self.cat,
                                     os.path.basename(src_fn))[:-4] + '.mat'
             trg_anns = os.path.join(self.root, 'Annotations', self.cat,
@@ -232,16 +249,16 @@ class PFPascalPairsOrig(TorchDataset):
         source_kps = point_coords_src # N, 3
         target_kps = point_coords_trg # N, 3
 
-        x_min = min(source_kps[source_kps[:,2]==1][:,1])
-        x_max = max(source_kps[source_kps[:,2]==1][:,1])
-        y_min = min(source_kps[target_kps[:,2]==1][:,0])
-        y_max = max(source_kps[target_kps[:,2]==1][:,0])
+        x_min = source_kps[source_kps[:,2]==1][:,1].min().item()
+        x_max = source_kps[source_kps[:,2]==1][:,1].max().item()
+        y_min = source_kps[target_kps[:,2]==1][:,0].min().item()
+        y_max = source_kps[target_kps[:,2]==1][:,0].max().item()
         # src_bndbox = np.array([0,0, src_size[1], src_size[0]])
         src_bndbox = np.array([x_min, y_min, x_max, y_max])
-        x_min = min(target_kps[target_kps[:,2]==1][:,1])
-        x_max = max(target_kps[target_kps[:,2]==1][:,1])
-        y_min = min(target_kps[target_kps[:,2]==1][:,0])
-        y_max = max(target_kps[target_kps[:,2]==1][:,0])
+        x_min = target_kps[target_kps[:,2]==1][:,1].min().item()
+        x_max = target_kps[target_kps[:,2]==1][:,1].max().item()
+        y_min = target_kps[target_kps[:,2]==1][:,0].min().item()
+        y_max = target_kps[target_kps[:,2]==1][:,0].max().item()
         trg_bndbox = np.array([0,0, trg_size[1], trg_size[0]])
         # trg_bndbox = np.array([0,0, trg_size[1], trg_size[0]])
         data = {
@@ -286,6 +303,7 @@ class PFPascalPairsOrigPadded(PFPascalPairsOrig):
         self.seed_pairs = 1 # this can be changed for different epochs
     
     def total_len(self):
+        assert(self.cat is not None)
         data = pd.read_csv(f'{self.root}/{self.split}_pairs_pf_pascal.csv')
         cls_ids = data.iloc[:,2].values.astype("int") - 1
         cat_id = OBJECT_CLASSES.index(self.cat)

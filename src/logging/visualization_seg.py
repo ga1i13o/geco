@@ -11,13 +11,14 @@ COLOURS = [
 
 def plot_assignment(assignment_dict, list_of_kp_names=None, path=None, wandb_suffix='', plot_cmap=False, limits=None):
     import os
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if path is not None:
+        if not os.path.exists(path):
+            os.makedirs(path)
     def plot_matrix(M_, title, limits):
-        if 'single' in path and "cos_sim" in title:
+        if path is not None and 'single' in path and "cos_sim" in title:
             M = M_.clone()
             limits = [0, 1]
-        elif 'single' in path and "diag" in path:
+        elif path is not None and 'single' in path and "diag" in path:
             M = M_.clone()
         else:
             M = M_.clone()/M_.sum()
@@ -38,16 +39,17 @@ def plot_assignment(assignment_dict, list_of_kp_names=None, path=None, wandb_suf
             plt.yticks(range(len(list_of_kp_names)), list_of_kp_names)
         # adjust the plot such that the heading and the colorbar are not cut off
         plt.subplots_adjust(top=0.78)
-        plt.savefig(path+'/matrix_'+title + ".png")
-        if wandb.run is not None:
-            # log to wandb
-            wandb.log({wandb_suffix+'_'+title : wandb.Image(path+'/matrix_'+title + ".png")})
-        if plot_cmap:
-            # plot the jet colormap
-            plt.gca().set_visible(False)
-            cax = plt.axes([0.0, 0.0, 1.0, 0.05])
-            plt.colorbar(orientation="horizontal", cax=cax)
-            plt.savefig(path+'/colourbar_'+title + ".png", bbox_inches='tight')
+        if path is not None:
+            plt.savefig(path+'/matrix_'+title + ".png")
+            if wandb.run is not None:
+                # log to wandb
+                wandb.log({wandb_suffix+'_'+title : wandb.Image(path+'/matrix_'+title + ".png")})
+            if plot_cmap:
+                # plot the jet colormap
+                plt.gca().set_visible(False)
+                cax = plt.axes((0.0, 0.0, 1.0, 0.05))
+                plt.colorbar(orientation="horizontal", cax=cax)
+                plt.savefig(path+'/colourbar_'+title + ".png", bbox_inches='tight')
 
         plt.close('all')
 

@@ -10,6 +10,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 from tqdm import tqdm
 from src.dataset.augmentations import DataAugmentation
 from src.dataset.random_utils import use_seed
+from typing import Optional, Any
 
 AP10K_FLIP = [
                 [0,1], # eye
@@ -71,6 +72,11 @@ class AP10KPairsOrig(TorchDataset):
         self.return_imgs = False
         self.return_masks = False
         self.return_feats = True
+        # Initialize attributes that may be set externally
+        self.featurizer: Optional[Any] = None
+        self.featurizer_kwargs: Optional[Any] = None
+        self.model_seg: Optional[Any] = None
+        self.model_seg_name: Optional[str] = None
 
     def __len__(self):
         return len(self.pairs[self.cat])
@@ -105,6 +111,8 @@ class AP10KPairsOrig(TorchDataset):
             feat0 = self.get_feat(source_imname)
             feat1 = self.get_feat(target_imname)
         except:
+            assert(self.featurizer is not None)
+            assert(self.featurizer_kwargs is not None)
             img0, img1 = self.get_imgs(idx)
             feat0 = self._get_feat(img0, self.featurizer, self.featurizer_kwargs)
             feat1 = self._get_feat(img1, self.featurizer, self.featurizer_kwargs)
@@ -117,11 +125,14 @@ class AP10KPairsOrig(TorchDataset):
         source_json_path = data["src_json_path"]
         target_json_path = data["trg_json_path"]
         try:
+            assert(self.model_seg_name is not None)
+            assert(self.cat is not None)
             imname0_, imname1_ = source_json_path.split('/')[-1], target_json_path.split('/')[-1]
             imname0, imname1 = imname0_.split('.')[0]+'.pt', imname1_.split('.')[0]+'.pt'
             mask0 = torch.load(os.path.join(self.save_path_masks, self.name_this, self.model_seg_name, self.cat, imname0))
             mask1 = torch.load(os.path.join(self.save_path_masks, self.name_this, self.model_seg_name, self.cat, imname1))
         except:
+            assert(self.model_seg is not None)
             src_img_path = source_json_path.replace("json", "jpg").replace('ImageAnnotation', 'JPEGImages')
             trg_img_path = target_json_path.replace("json", "jpg").replace('ImageAnnotation', 'JPEGImages')
 
@@ -137,6 +148,7 @@ class AP10KPairsOrig(TorchDataset):
     
     def store_masks(self, overwrite):
         assert(self.name == self.name_this)
+        assert(self.model_seg is not None)
         print("saving all %s images' masks..."%self.split)
         path = os.path.join(self.save_path_masks, self.name_this, self.model_seg.name)
         for cat in tqdm(self.all_cats):
@@ -166,6 +178,8 @@ class AP10KPairsOrig(TorchDataset):
                     torch.save(prt1.cpu(), os.path.join(path, cat, imname1))
 
     def get_feat(self, imname):
+        assert(self.featurizer_name is not None)
+        assert(self.cat is not None)
         path = os.path.join(self.save_path, self.name_this, self.featurizer_name, self.cat)
         feat = torch.load(os.path.join(path, imname+'.pth')).to(device)
         return feat
@@ -324,6 +338,8 @@ class AP10KPairsAugmented(AP10KPairsOrig):
         data_out.update({'idx': idx, 'cat': self.cat})
                 
         if self.return_feats:
+            assert(self.featurizer is not None)
+            assert(self.featurizer_kwargs is not None)
             # get the features of the augmented image
             ft_src = self._get_feat(img_src, self.featurizer, self.featurizer_kwargs)[0]
             ft_trg = self._get_feat(img_trg, self.featurizer, self.featurizer_kwargs)[0]

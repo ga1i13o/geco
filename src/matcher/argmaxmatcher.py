@@ -71,4 +71,7 @@ class ArgmaxMatcher(nn.Module):
             trg_point = (trg_point * trg_scale).floor().long() 
         # scale the cosine map to the original image size
         cos_map = nn.Upsample(size=trg_img_size.tolist(), mode='bilinear')(cos_map.view(1, 1, H0, W0)).squeeze(0).squeeze(0)
-        return trg_point.detach().cpu().numpy(), cos_map.detach().cpu().numpy()
+        if trg_point is not None:
+            return trg_point.detach().cpu().numpy(), cos_map.detach().cpu().numpy()
+        else:
+            return None, cos_map.detach().cpu().numpy()

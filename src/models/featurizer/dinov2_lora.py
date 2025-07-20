@@ -27,7 +27,7 @@ class LoRA(nn.Module):
         self.linear_b_q = linear_b_q
         self.linear_a_v = linear_a_v
         self.linear_b_v = linear_b_v
-        self.dim = qkv.in_features
+        self.dim = getattr(qkv, 'in_features', 768)  # Default fallback
         self.w_identity = torch.eye(self.dim)
 
     def forward(self, x) -> torch.Tensor:
@@ -64,14 +64,33 @@ def get_name(log_bin=True, img_size='518', up_ft_index='1', **kwargs):
     name = 'dinov2lora'
     if log_bin:
         name = 'dinov2lora_logbin'
-    return name + f'_%d_upft%d' % (img_size[0], up_ft_index)
+    # Handle both string and list inputs for img_size
+    if isinstance(img_size, list):
+        img_size_val = img_size[0]
+    else:
+        img_size_val = img_size
+    # Handle up_ft_index conversion
+    if hasattr(up_ft_index, '__iter__') and not isinstance(up_ft_index, str):
+        up_ft_index_val = up_ft_index[0] if len(up_ft_index) > 0 else 1
+    else:
+        up_ft_index_val = up_ft_index
+    # Convert to int, handling ListConfig objects
+    try:
+        img_size_int = int(img_size_val)
+        up_ft_index_int = int(up_ft_index_val)
+    except (ValueError, TypeError):
+        # Fallback values if conversion fails
+        img_size_int = 518
+        up_ft_index_int = 1
+    return name + f'_%d_upft%d' % (img_size_int, up_ft_index_int)
 
 class DINOv2LoRAFeaturizer(nn.Module):
     name = 'dinov2lora'
     def __init__(self, log_bin=True, img_size='518', up_ft_index='1', **kwargs):
         super().__init__()
         self.model_size = kwargs.get('model_size', "dinov2_vits14")
-        self.model = torch.hub.load("facebookresearch/dinov2", self.model_size).to(device)
+        self.model = torch.hub.load("facebookresearch/dinov2", self.model_size)
+        self.model = self.model.to(device)  # type: ignore
         for param in self.model.parameters():
             param.requires_grad = False
         self._use_log_bin = log_bin
@@ -123,7 +142,7 @@ class DINOv2LoRAFeaturizer(nn.Module):
         # out_dict = self.model(pixel_values=img_tensor, return_dict=True, output_hidden_states=True)
         #https://github.com/huggingface/transformers/blob/v4.34.0/src/transformers/models/dinov2/modeling_dinov2.py#L661
         # out = out_dict.hidden_states[-up_ft_index] # B, w0*h0, D
-        out = self.model.get_intermediate_layers(img_tensor, n=up_ft_index)
+        out = self.model.get_intermediate_layers(img_tensor, n=up_ft_index)  # type: ignore
         out = out[0] # take the output of the the n-th last block
         out = out[:, :, :] # B, w0*h0, D
         D = out.shape[-1]

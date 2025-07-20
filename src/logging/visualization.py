@@ -24,7 +24,6 @@ class Demo:
         max_h = max([img.size[1] for img in self.imgs])
         imgs = []
         for i in range(len(self.imgs)):
-            []
             if self.imgs[i].size[1] < max_h:
                 # add zero padding using pillow
                 img = Image.new('RGB', (self.imgs[i].size[0], max_h), (0, 0, 0))

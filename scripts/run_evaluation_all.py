@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 from src.logging.log_results import finish_wandb, init_wandb
 from src.evaluation.evaluation import Evaluation

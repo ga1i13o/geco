@@ -127,5 +127,5 @@ def get_y_mat_gt_assignment(kp0, kp1, ft_size0, ft_size1):
         
     else:
         # if no keypoints are annotated, return a matrix with only zeros
-        matrix = torch.sparse_coo_tensor(([],[]), [], size).coalesce()
+        matrix = torch.sparse_coo_tensor(torch.empty((2, 0), dtype=torch.long), [], size).coalesce()
     return matrix

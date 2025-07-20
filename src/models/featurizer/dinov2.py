@@ -37,7 +37,8 @@ class DINOv2Featurizer:
     name = 'dinov2'
     def __init__(self, log_bin=True, img_size='518', up_ft_index='1', **kwargs):
         self.model_size = kwargs.get('model_size', "dinov2_vits14")
-        self.model = torch.hub.load("facebookresearch/dinov2", self.model_size).eval().to(device)
+        model = torch.hub.load("facebookresearch/dinov2", self.model_size)
+        self.model = model.eval().to(device)
         self._use_log_bin = log_bin
         self.name = get_name(log_bin, img_size, up_ft_index, **kwargs)
         self.vit_patch_size = 14
@@ -96,7 +97,7 @@ class DINOv2Featurizer:
         bin_x = torch.zeros((B, sub_desc_dim * num_bins, w0, h0)).to(x.device)
         for y in range(w0):
             for x in range(h0):
-                part_idx = 0
+                part_idx: int = 0
                 # fill all bins for a spatial location (y, x)
                 for k in range(0, hierarchy):
                     kernel_size = 3 ** k

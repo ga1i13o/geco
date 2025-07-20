@@ -72,10 +72,8 @@ def get_featpairs(dataset, idx, model_refine=None, only_fg=False, feat_interpol=
     if model_refine is not None:
         ft0 = model_refine(ft0)
         ft1 = model_refine(ft1)
-    feats = [None, None]
-    feats[0] = ft0.permute(0,2,3,1).flatten(0,-2)# B, C, H, W -> H*W, C
-    feats[1] = ft1.permute(0,2,3,1).flatten(0,-2)# B, C, H, W -> H*W, C
-    parts = [None, None]
+    feats = [ft0.permute(0,2,3,1).flatten(0,-2), ft1.permute(0,2,3,1).flatten(0,-2)]# B, C, H, W -> H*W, C
+    parts = []
     for i,(ft, prefix) in enumerate(zip([ft0, ft1], ['src', 'trg'])):
         if  prefix+'_kps' in dataset[idx].keys():
 
@@ -100,9 +98,9 @@ def get_featpairs(dataset, idx, model_refine=None, only_fg=False, feat_interpol=
 
             # free up memory
             torch.cuda.empty_cache()
-            parts[i] = torch.eye(kp.shape[0])[visible_mask]
+            parts.append(torch.eye(kp.shape[0])[visible_mask])
         else:
-            parts[i] = None
+            parts.append(None)
 
     return feats[0], parts[0], feats[1], parts[1]
 

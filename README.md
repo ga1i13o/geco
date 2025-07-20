@@ -32,6 +32,14 @@ wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
 
 ```
 
+Install odise in case you want to run the Geo baseline
+
+```bash
+git clone git@github.com:NVlabs/ODISE.git
+cd ODISE
+pip install -e .
+```
+
 ## 🚀 Get Started
 
 ### 📁  Prepare the Datasets

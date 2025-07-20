@@ -7,6 +7,7 @@ from scipy.io import loadmat
 import os
 from tqdm import tqdm
 from src.dataset.pascalparts_part2ind import part2ind
+from typing import Optional, Any
 OBJECT_CLASSES = ['aeroplane','bicycle','bird','boat','bottle','bus','car','cat',
                   'chair','cow','table','dog','horse','motorbike','person','pottedplant','sheep','sofa','train','tvmonitor']
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -27,6 +28,12 @@ class PascalParts(TorchDataset):
         self.split = split
 
         self.featurizer_name = None
+        # Initialize attributes that may be set externally
+        self.featurizer: Optional[Any] = None
+        self.featurizer_kwargs: Optional[Any] = None
+        self.model_seg: Optional[Any] = None
+        self.model_seg_name: Optional[str] = None
+        self.return_masks: bool = False
 
         self.all_cats = OBJECT_CLASSES
         self.all_cats_multipart = ['bird', 'cat', 'cow', 'dog', 'horse', 'sheep', 'person'] # categories with multiple parts that are annotated in many images
@@ -107,6 +114,8 @@ class PascalParts(TorchDataset):
         return img
     
     def get_feat(self, idx):
+        assert(self.featurizer_name is not None)
+        assert(self.cat is not None)
         ft_name =  self.data[self.cat][idx]+'.pth'
         ft = torch.load(os.path.join(self.save_path, self.name_this, self.featurizer_name, ft_name)).to(device)
         return ft
@@ -127,6 +136,7 @@ class PascalParts(TorchDataset):
         if isinstance(mat.__dict__['objects'], np.ndarray):
             raise ValueError('Multiple objects in image')
         obj_mask = mat.__dict__['objects'].__dict__['mask']
+        assert(self.cat is not None)
         cat_idx = OBJECT_CLASSES.index(self.cat)+1 # the index of the category in the pascal parts dataset
         part_dict, _, _ = part2ind(cat_idx) # get the part dictionary for the category
         if len(part_dict.values()) == 0:
@@ -171,6 +181,8 @@ class PascalParts(TorchDataset):
         try:
             ft = self.get_feat(idx)[0]
         except:
+            assert(self.featurizer is not None)
+            assert(self.featurizer_kwargs is not None)
             ft = self._get_feat(idx, self.featurizer, self.featurizer_kwargs)[0]
         imsize = torch.tensor((parts_mask.shape[-2], parts_mask.shape[-1]))
         return {'ft': ft, 'imsize': imsize, 'parts_mask': parts_mask, 'part_dict': part_dict, 'idx': idx}

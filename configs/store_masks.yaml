@@ -1,5 +1,5 @@
 defaults:
-  - dataset/cub # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset: cub # ['apk', 'cub', 'spair', 'pfpascal']
 
 dataset:
   split: 'train'

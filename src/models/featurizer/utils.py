@@ -41,7 +41,7 @@ def load_checkpoint(args):
         model_out_path = Path(args.model_out_path).joinpath(args.init.id)
         name = "last_lora_weights.pth" if 'eval_last' in args.init else "best_lora_weights.pth"
         model_out_path_new = model_out_path.joinpath(name)
-        model.load_parameters(model_out_path_new)
+        model.load_parameters(str(model_out_path_new))
     else:
         raise ValueError
     

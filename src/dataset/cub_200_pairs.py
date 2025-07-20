@@ -11,7 +11,7 @@ def CUBPairDataset(args, **kwargs):
         else:
             return CUBPairDatasetOrig(args, **kwargs)
     elif args.sup == 'sup_augmented':
-        return CUBPairDatasetAugmented(args, **kwargs)
+        return CUBPairDatasetAugmentedPadded(args, **kwargs)
     else:
         raise ValueError(f"Unknown supervision type {args.sup}")
                 
@@ -198,3 +198,49 @@ class CUBPairDatasetAugmented(CUBDatasetAugmented):
             data['src_mask'] = mask0
             data['trg_mask'] = mask1
         return data
+
+class CUBPairDatasetAugmentedPadded(CUBPairDatasetAugmented):
+    def __init__(self, args, **kwargs):
+        super().__init__(args, **kwargs)
+        self.n_kps = 100
+        self.num_el = args.num_el if 'num_el' in args else None
+
+    def total_len(self):
+        return len(self.pairs)
+    
+    def __len__(self):
+        if self.num_el is None:
+            return self.total_len()
+        return min(self.num_el, self.total_len())
+    
+    def pad_kps(self, kps):
+        kps = kps.clone()
+        pad = self.n_kps - kps.shape[0]
+        if pad > 0:
+            kps = torch.cat([kps, torch.zeros(pad, 3)], dim=0)
+        return kps
+
+    def init_kps_cat(self, cat):
+        super().init_kps_cat(cat)
+        # remove the shuffeled_idx_list
+        if hasattr(self, 'shuffeled_idx_list'):
+            delattr(self, 'shuffeled_idx_list')
+            
+    def __getitem__(self, idx):
+        totallen = self.total_len()
+        subsetlen = self.__len__()
+        # create new idx list excluding the idx that have been used
+        if not hasattr(self, 'shuffeled_idx_list'):
+            with use_seed(self.seed_pairs):
+                self.shuffeled_idx_list = np.random.permutation(totallen)
+        elif len(self.shuffeled_idx_list) < self.seed_pairs*subsetlen:
+            with use_seed(self.seed_pairs+1):
+                self.shuffeled_idx_list = np.append(self.shuffeled_idx_list, np.random.permutation(totallen))
+        idx_ = self.shuffeled_idx_list[idx+(self.seed_pairs-1)*subsetlen]
+
+        data_out = super().__getitem__(int(idx_))
+        # pad the keypoints
+        for k in data_out.keys():
+            if 'kps' in k:
+                data_out[k] = self.pad_kps(data_out[k])
+        return data_out

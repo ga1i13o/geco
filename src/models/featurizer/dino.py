@@ -27,7 +27,8 @@ def get_name(dino_id='dino_vitb8', log_bin=True, img_size='224', up_ft_index='4'
 class DINOFeaturizer:
     name = 'dino'
     def __init__(self, dino_id='dino_vitb8', log_bin=True, img_size='224', up_ft_index='4', **kwargs):
-        self.model = torch.hub.load('facebookresearch/dino:main', dino_id).eval().to(device)
+        model = torch.hub.load('facebookresearch/dino:main', dino_id)
+        self.model = model.eval().to(device)
         self._use_log_bin = log_bin
         self.name = get_name(dino_id, log_bin, img_size, up_ft_index, **kwargs)
         self.vit_patch_size = 8
@@ -84,7 +85,7 @@ class DINOFeaturizer:
         bin_x = torch.zeros((B, sub_desc_dim * num_bins, w0, h0)).to(x.device)
         for y in range(w0):
             for x in range(h0):
-                part_idx = 0
+                part_idx: int = 0
                 # fill all bins for a spatial location (y, x)
                 for k in range(0, hierarchy):
                     kernel_size = 3 ** k

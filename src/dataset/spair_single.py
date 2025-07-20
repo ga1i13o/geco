@@ -9,6 +9,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 from tqdm import tqdm
 from src.dataset.augmentations import DataAugmentation
 from src.dataset.random_utils import use_seed
+from typing import Optional, Any
 
 
 class SpairDatasetSingle(TorchDataset):
@@ -30,6 +31,12 @@ class SpairDatasetSingle(TorchDataset):
         self.rel_path_list_single = {}
         self.all_cats_multipart = self.all_cats
         self.return_feats = True
+        # Initialize attributes that may be set externally
+        self.featurizer: Optional[Any] = None
+        self.featurizer_kwargs: Optional[Any] = None
+        self.model_seg: Optional[Any] = None
+        self.model_seg_name: Optional[str] = None
+        self.return_masks: bool = False
         for cat in self.all_cats:
             # load all image annotations
             self.rel_path_list_single[cat] = os.listdir(os.path.join(self.root, self.annotation_path_single, cat))
@@ -97,6 +104,7 @@ class SpairDatasetSingle(TorchDataset):
         return self._get_img(idx_)
 
     def _get_img(self, idx_):
+        assert(self.cat is not None)
         idx = self.split_indices[self.cat][idx_]
         json_path = self.rel_path_list_single[self.cat][idx]
         with open(os.path.join(self.root, self.annotation_path_single, self.cat, json_path)) as temp_f:
@@ -106,17 +114,20 @@ class SpairDatasetSingle(TorchDataset):
         return img
     
     def get_mask(self, idx_):
+        assert(self.cat is not None)
         idx = self.split_indices[self.cat][idx_]
         json_path = self.rel_path_list_single[self.cat][idx]
         with open(os.path.join(self.root, self.annotation_path_single, self.cat, json_path)) as temp_f:
             data = json.load(temp_f)
             imname = data['filename']
         try:
+            assert(self.model_seg_name is not None)
             # raise NotImplementedError
             imname_ = imname.split('.')[0]+'.png'
             prt = torch.load(os.path.join(self.save_path_masks, self.name_this, self.model_seg_name, self.cat, imname_))
             # prt = Image.open(os.path.join(self.root, 'Segmentation', self.cat, imname))
         except:
+            assert(self.model_seg is not None)
             img = Image.open(os.path.join(self.root, 'JPEGImages', self.cat, imname)).convert('RGB')
             kps = self.get_kp(idx_)
             prt = self.model_seg(img, data['bndbox'], kps=kps[kps[:,2]==1])
@@ -124,6 +135,7 @@ class SpairDatasetSingle(TorchDataset):
         return prt
     
     def store_masks(self, overwrite):
+        assert(self.model_seg is not None)
         print("saving all %s images' masks..."%self.split)
         path = os.path.join(self.save_path_masks, self.name_this, self.model_seg.name)
         for cat in tqdm(self.all_cats):
@@ -132,6 +144,7 @@ class SpairDatasetSingle(TorchDataset):
                 prt = self.get_mask(idx_)
                 prt = torch.tensor(prt)
                 # get imname
+                assert(self.cat is not None)
                 idx = self.split_indices[self.cat][idx_]
                 json_path = self.rel_path_list_single[self.cat][idx]
                 with open(os.path.join(self.root, self.annotation_path_single, self.cat, json_path)) as temp_f:
@@ -155,7 +168,7 @@ class SpairDatasetSingle(TorchDataset):
 
     def get_kp_dict(self, keypoints):
         kp_data = { 'kps': keypoints}
-        if self.KP_LEFT_RIGHT_PERMUTATION is not None:
+        if self.KP_LEFT_RIGHT_PERMUTATION is not None and self.KP_WITH_ORIENTATION is not None:
             kps_symm = keypoints.clone()[self.KP_LEFT_RIGHT_PERMUTATION]
             kps_symm_only = kps_symm.clone()
             kps_symm_only[~self.KP_WITH_ORIENTATION, 2] = 0
@@ -164,6 +177,7 @@ class SpairDatasetSingle(TorchDataset):
         return kp_data
     
     def get_kp(self, idx_):
+        assert(self.cat is not None)
         idx = self.split_indices[self.cat][idx_]
         json_path = self.rel_path_list_single[self.cat][idx]
         with open(os.path.join(self.root, self.annotation_path_single, self.cat, json_path)) as temp_f:
@@ -181,6 +195,8 @@ class SpairDatasetSingle(TorchDataset):
         return keypoints
     
     def get_feat(self, imname):
+        assert(self.featurizer_name is not None)
+        assert(self.cat is not None)
         name = 'spair_single'
         path = os.path.join(self.save_path, name, self.featurizer_name)
         imname_  = imname.split('.')[0]
@@ -188,6 +204,7 @@ class SpairDatasetSingle(TorchDataset):
         return ft
     
     def getitem_wo_feat(self, idx_):
+        assert(self.cat is not None)
         idx = self.split_indices[self.cat][idx_]
         # find idx of test image pairs in the category
         json_path = self.rel_path_list_single[self.cat][idx]
@@ -209,6 +226,7 @@ class SpairDatasetSingle(TorchDataset):
         return data_out
     
     def __getitem__(self, idx_):
+        assert(self.cat is not None)
         idx = self.split_indices[self.cat][idx_]
         # find idx of test image pairs in the category
         json_path = self.rel_path_list_single[self.cat][idx]

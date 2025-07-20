@@ -15,7 +15,7 @@ class SAM(nn.Module):
     def __init__(self, args):
         super().__init__()
         """wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"""
-        sam_checkpoint = f"{args.path_model_seg}sam_vit_h_4b8939.pth"
+        sam_checkpoint = args.path_model_seg
         model_type = "vit_h"
         sam = sam_model_registry[model_type](checkpoint=sam_checkpoint).to(device=device)
         self.sam = SamPredictor(sam)
