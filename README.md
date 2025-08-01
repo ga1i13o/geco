@@ -1,22 +1,51 @@
-# 🦎 GECO: Geometrically consistent embedding with lightspeed inference
+# 🦎 GECO: Geometrically Consistent Embedding with Lightspeed Inference (ICCV 2025)
 
-This repository contains the official implementation of:
 
-**GECO: Geometrically consistent embedding with lightspeed inference** 
+[ 🌐**Project Page**](https://reginehartwig.github.io/publications/geco/) • [📄  **Paper**](TBA) 
 
-[ 🌐**Project Page**](https://reginehartwig.github.io/publications/geco/) • [📄  **Paper**](TBA)
 <div style="display: flex; align-items: center; gap: 10px;">
-    <img src="assets/src_10_2_crop.png" alt=" " width="200">
-    <img src="assets/trg_10_2_crop_blend.gif" alt=" " width="200">
-</div>
-</p>
-<div style="display: flex; align-items: center; gap: 10px;">
-<img src="assets/src_01_5_crop.png" alt=" " width="200">
-<img src="assets/trg_01_5_crop_blend.gif" alt=" " width="200">
-</p>
+    <img src="assets/birds_teaser.png" alt=" " width="600">
+    
+
 </div>
 
+This is the official repository for the ICCV 2025 paper:
 
+ > **GECO: Geometrically Consistent Embedding with Lightspeed Inference**.
+>
+>[Regine Hartwig](https://reginehartwig.github.io/)<sup>1,2</sup>, 
+>[Dominik Muhle](https://dominikmuhle.github.io/)<sup>1,2</sup>,
+>[Riccardo Marin](https://ricma.netlify.app/)<sup>1,2</sup>,
+>[Daniel Cremers](https://cvg.cit.tum.de/members/cremers)<sup>1,2</sup>,
+> 
+> <sup>1</sup>Technical University of Munich, <sup>2</sup>MCML
+>
+> [**ICCV 2025** (arXiv)](TBD)
+
+
+If you find our work useful, please consider citing our paper:
+```
+@inproceedings{hartwig2025geco,
+  title={GECO: Geometrically Consistent Embedding with Lightspeed Inference},
+  author={Hartwig, Regine and Muhle, Dominik and Marin, Riccardo and Cremers, Daniel},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  year={2025}
+}
+```
+
+## Intro
+
+We address the task of geometry-aware feature encoding. A common way to test geometric awareness is through keypoint matching: Given a source image with an annotated keypoint, the goal is to predict the <b style="color: rgb(152, 163, 39);">keypoint</b> in the target image by selecting the location with the highest feature similarity. Below are two examples:
+<table>
+    <tr>
+        <td><img src="./assets/src_10_2_crop.png" width="200"/></td>
+        <td><img src="./assets/trg_10_2_crop_blend.gif" width="200"/></td>
+        <td><img src="./assets/src_01_5_crop.png" width="200"/></td>
+        <td><img src="./assets/trg_01_5_crop_blend.gif" width="200"/></td>
+    </tr>
+</table>
+
+We introduce a training paradigm and a lightweight architecture for learning from image pairs with sparsely annotated keypoints. Additionally, we enhance the testing of features by introducing subdivisions of the commonly used PCK metric and a centroid clustering approach for more densely evaluating the feature space.
 ## 🔧 Environment Setup
 If you're using a Linux machine, set up the Python environment with:
 ```bash
