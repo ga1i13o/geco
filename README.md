@@ -1,7 +1,7 @@
 # 🦎 GECO: Geometrically Consistent Embedding with Lightspeed Inference (ICCV 2025)
 
 
-[ 🌐**Project Page**](https://reginehartwig.github.io/publications/geco/) • [📄  **Paper**](TBA) 
+[ 🌐**Project Page**](https://reginehartwig.github.io/publications/geco/) • [📄  **Paper**](https://arxiv.org/pdf/2508.00746) 
 
 <div style="display: flex; align-items: center; gap: 10px;">
     <img src="assets/birds_teaser.png" alt=" " width="600">
@@ -20,7 +20,7 @@ This is the official repository for the ICCV 2025 paper:
 > 
 > <sup>1</sup>Technical University of Munich, <sup>2</sup>MCML
 >
-> [**ICCV 2025** (arXiv)](TBD)
+> [**ICCV 2025** (arXiv)](https://arxiv.org/pdf/2508.00746)
 
 
 If you find our work useful, please consider citing our paper:
