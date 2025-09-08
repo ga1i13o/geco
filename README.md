@@ -115,11 +115,7 @@ python scripts/store_feats.py --config-name=store_feats.yaml
 
 
 ## 🎯 Pretrained Weights
-Download pretrained weights:
-    ```bash
-    bash download_data/pretrained_weights.sh
-    ```
-
+Pretrained weights are available in ```pretrained_weights/geco```.
 
 ## 🧪 Interactive Demos: Give it a Try!
 
