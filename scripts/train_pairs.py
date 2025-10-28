@@ -81,8 +81,10 @@ def train_epoch(train_loader, model_refine, optimizer, weights, loss_fun, args, 
             log_wandb_ram_usage()
             print ('Epoch [{}/{}], Step [{}/{}] Eval start'.format(epoch, args.epoch,i,I))
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-            for eva in [evaluation_test, evaluation_train, evaluation_val, evaluation_val_gen, evaluation_val_gen2, evaluation_val_gen3]:
+            for eva in [evaluation_test, evaluation_train, evaluation_val]:
                 eva.epoch = epoch-1+i/I
+            # for eva in [evaluation_test, evaluation_train, evaluation_val, evaluation_val_gen, evaluation_val_gen2, evaluation_val_gen3]:
+            #     eva.epoch = epoch-1+i/I
             print("Epoch [{}/{}], Step [{}/{}] Eval on val set".format(epoch, args.epoch,i,I))
             n_eval_imgs = 10
             evaluation_val.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val.dataset_test_pck.name)
