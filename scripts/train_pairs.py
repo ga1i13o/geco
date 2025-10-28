@@ -44,10 +44,11 @@ def train_batch(data, model_refine, loss_fun):
     losses = loss_fun.get_loss(ft0, ft1, data)
     return losses
 
+from tqdm import tqdm
 def train_epoch(train_loader, model_refine, optimizer, weights, loss_fun, args, epoch, evaluation_test, evaluation_train, evaluation_val, evaluation_val_gen, evaluation_val_gen2, evaluation_val_gen3, best_pck, featurizer=None):
     # iterate over the dataset
     I = len(train_loader)
-    for i, data in enumerate(train_loader):
+    for i, data in enumerate(tqdm(train_loader, ncols=80)):
         start_loss = time.time()
         if model_refine is not None:
             model_refine.train()
