@@ -25,8 +25,7 @@ def init_wandb(cfg, prefix=''):
             if 'sup' in cfg['dataset4']:
                 name = name+cfg['dataset4']['sup']
 
-    wandb.init(entity="<your-wandb-entity>",
-                project="<your-wandb-project>",
+    wandb.init(project="geco_train",
                 name=prefix+'  '+name,
                 config=cfg,
                 settings=wandb.Settings(code_dir="."))

@@ -1,7 +1,7 @@
 defaults:
-  - dataset: cub # ['apk', 'cub', 'spair', 'pfpascal']
+  - dataset: spair # ['apk', 'cub', 'spair', 'pfpascal']
 
 dataset:
   split: 'train'
-path_model_seg: <path-model-seg>
+path_model_seg: /home/gtrivigno/GF-SAM/models/sam_vit_h_4b8939.pth
 model_seg_name: sam

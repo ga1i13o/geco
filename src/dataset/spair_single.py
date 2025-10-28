@@ -293,13 +293,10 @@ class SpairDatasetSingleAugmented(SpairDatasetSingle):
         return img
     
     def get_mask(self, idx):
-        try:
-            prt = super().get_mask(idx)
-            with use_seed(idx+self.seed):
-                prt = self.DataAugmentation.augment_mask(Image.fromarray(prt))
-            prt = np.array(prt)
-        except:
-            pass
+        prt = super().get_mask(idx)
+        with use_seed(idx+self.seed):
+            prt = self.DataAugmentation.augment_mask(Image.fromarray(prt))
+        prt = np.array(prt)
         return prt
     
     def _get_feat(self, img, featurizer, featurizer_kwargs):

@@ -85,21 +85,21 @@ def train_epoch(train_loader, model_refine, optimizer, weights, loss_fun, args, 
             print("Epoch [{}/{}], Step [{}/{}] Eval on val set".format(epoch, args.epoch,i,I))
             n_eval_imgs = 10
             evaluation_val.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val.dataset_test_pck.name)
-            evaluation_val_gen.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val_gen.dataset_test_pck.name)
-            evaluation_val_gen2.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val_gen2.dataset_test_pck.name)
-            evaluation_val_gen3.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val_gen3.dataset_test_pck.name)
+            # evaluation_val_gen.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val_gen.dataset_test_pck.name)
+            # evaluation_val_gen2.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val_gen2.dataset_test_pck.name)
+            # evaluation_val_gen3.evaluate_pck(model_refine, n_pairs_eval_pck=n_eval_imgs, suffix=evaluation_val_gen3.dataset_test_pck.name)
             log_wandb_ram_usage()
             print ('Epoch [{}/{}], Step [{}/{}] Eval end'.format(epoch, args.epoch,i,I))
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
             # process checkpoint 
             suffix = evaluation_val.dataset_test_pck.name
             val_pck =evaluation_val.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}'] 
-            suffix = evaluation_val_gen.dataset_test_pck.name
-            val_pck+=evaluation_val_gen.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}']
-            suffix = evaluation_val_gen2.dataset_test_pck.name
-            val_pck+=evaluation_val_gen2.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}']
-            suffix = evaluation_val_gen3.dataset_test_pck.name
-            val_pck+=evaluation_val_gen3.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}']
+            # suffix = evaluation_val_gen.dataset_test_pck.name
+            # val_pck+=evaluation_val_gen.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}']
+            # suffix = evaluation_val_gen2.dataset_test_pck.name
+            # val_pck+=evaluation_val_gen2.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}']
+            # suffix = evaluation_val_gen3.dataset_test_pck.name
+            # val_pck+=evaluation_val_gen3.results_pck[f'per point PCK@0.1 _val_{n_eval_imgs}pairs_{suffix}']
             timediff_eval = time.time()-start_eval
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
             print(f"Epoch [{epoch}/{args.epoch}], Step [{i}/{I}] Eval time: {timediff_eval:.2f} s, PCK@0.1: {val_pck:.2f}")
@@ -196,18 +196,19 @@ def main(args: DictConfig):
         scheduler = None
     # add evaluation for different datasets
     argsgen = copy.deepcopy(args)
-    argsgen.dataset = argsgen.datasetgeneralization
-    evaluation_val_gen = Evaluation(argsgen, featurizer, split='val')
-    argsgen2 = copy.deepcopy(args)
-    argsgen2.dataset = argsgen.datasetgeneralization2
-    evaluation_val_gen2 = Evaluation(argsgen2, featurizer, split='val')
-    argsgen3 = copy.deepcopy(args)
-    argsgen3.dataset = argsgen.datasetgeneralization3
-    evaluation_val_gen3 = Evaluation(argsgen3, featurizer, split='val')
+    # argsgen.dataset = argsgen.datasetgeneralization
+    # evaluation_val_gen = Evaluation(argsgen, featurizer, split='val')
+    # argsgen2 = copy.deepcopy(args)
+    # argsgen2.dataset = argsgen.datasetgeneralization2
+    # evaluation_val_gen2 = Evaluation(argsgen2, featurizer, split='val')
+    # argsgen3 = copy.deepcopy(args)
+    # argsgen3.dataset = argsgen.datasetgeneralization3
+    # evaluation_val_gen3 = Evaluation(argsgen3, featurizer, split='val')
     # define the loss function
     loss_fun = PairwiseLoss(args)
     # start training
     best_pck = 0
+    evaluation_val_gen, evaluation_val_gen2, evaluation_val_gen3 = None, None, None
     for epoch in range(ep+1, args.epoch+1):
         # set seed
         set_seed(train_loader.dataset, args, epoch)
