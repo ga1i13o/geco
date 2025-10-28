@@ -1,0 +1,9 @@
+defaults:
+ - dinov2
+model: 'dinov2lora'
+model_out_path: '/home/ccuttano/geco/my_pretrained_weights'
+lora_rank: 10
+
+# init:
+#   id: geco
+#   eval_last: True
