@@ -297,53 +297,53 @@ def part2ind(i):
     # [tvmonitor]
         pimap = {'screen':1}
 
-            if PART_PERMUTATION is not None:
-                # Adjust the permutation array to exclude the offset `x`
-                PART_PERMUTATION_NEW = np.array(PART_PERMUTATION) - x
-                n_parts_inclnone = len(PART_PERMUTATION_NEW)
+        if PART_PERMUTATION is not None:
+            # Adjust the permutation array to exclude the offset `x`
+            PART_PERMUTATION_NEW = np.array(PART_PERMUTATION) - x
+            n_parts_inclnone = len(PART_PERMUTATION_NEW)
 
-                # Create a boolean array indicating parts with orientation, including entries for unassigned parts
-                PART_WITH_ORIENTATION_inclnone = (np.linspace(0, n_parts_inclnone - 1, n_parts_inclnone, dtype=np.int32) - PART_PERMUTATION_NEW) != 0
+            # Create a boolean array indicating parts with orientation, including entries for unassigned parts
+            PART_WITH_ORIENTATION_inclnone = (np.linspace(0, n_parts_inclnone - 1, n_parts_inclnone, dtype=np.int32) - PART_PERMUTATION_NEW) != 0
 
-                # Identify valid parts that are annotated in the dataset
-                parts_inclnone_2_onlyvalid = [i in pimap.values() for i in range(1, n_parts_inclnone + 1)]
+            # Identify valid parts that are annotated in the dataset
+            parts_inclnone_2_onlyvalid = [i in pimap.values() for i in range(1, n_parts_inclnone + 1)]
 
-                # Filter the orientation array to include only valid parts
-                PART_WITH_ORIENTATION = PART_WITH_ORIENTATION_inclnone[parts_inclnone_2_onlyvalid]
+            # Filter the orientation array to include only valid parts
+            PART_WITH_ORIENTATION = PART_WITH_ORIENTATION_inclnone[parts_inclnone_2_onlyvalid]
 
-                def change_perm_sub(perm, flag_subdiv):
-                    """
-                    Adjust the permutation array to reflect only valid parts.
+            def change_perm_sub(perm, flag_subdiv):
+                """
+                Adjust the permutation array to reflect only valid parts.
 
-                    Args:
-                        perm (numpy.ndarray): The original permutation array.
-                        flag_subdiv (list): A boolean list indicating valid parts.
+                Args:
+                    perm (numpy.ndarray): The original permutation array.
+                    flag_subdiv (list): A boolean list indicating valid parts.
 
-                    Returns:
-                        numpy.ndarray: The adjusted permutation array for valid parts.
-                    """
-                    # Extract the subset of the permutation array corresponding to valid parts
-                    perm_sub = perm[flag_subdiv]
+                Returns:
+                    numpy.ndarray: The adjusted permutation array for valid parts.
+                """
+                # Extract the subset of the permutation array corresponding to valid parts
+                perm_sub = perm[flag_subdiv]
 
-                    # Get indices of the valid subset
-                    subset_indices = np.nonzero(flag_subdiv)[0]
+                # Get indices of the valid subset
+                subset_indices = np.nonzero(flag_subdiv)[0]
 
-                    # Map global indices in the subset to local indices
-                    index_map = {original: i for i, original in enumerate(subset_indices)}
+                # Map global indices in the subset to local indices
+                index_map = {original: i for i, original in enumerate(subset_indices)}
 
-                    # Map each entry in the subset permutation to its corresponding local index
-                    perm_sub_mapped = np.array([index_map[i] for i in perm_sub])
-                    return perm_sub_mapped
+                # Map each entry in the subset permutation to its corresponding local index
+                perm_sub_mapped = np.array([index_map[i] for i in perm_sub])
+                return perm_sub_mapped
 
-                # Update the permutation array to reflect valid parts only
-                PART_PERMUTATION_NEW = change_perm_sub(PART_PERMUTATION_NEW, parts_inclnone_2_onlyvalid)
+            # Update the permutation array to reflect valid parts only
+            PART_PERMUTATION_NEW = change_perm_sub(PART_PERMUTATION_NEW, parts_inclnone_2_onlyvalid)
 
-                # Convert the updated permutation array back to a list and reapply the offset `x`
-                PART_PERMUTATION = (PART_PERMUTATION_NEW + x).tolist()
+            # Convert the updated permutation array back to a list and reapply the offset `x`
+            PART_PERMUTATION = (PART_PERMUTATION_NEW + x).tolist()
 
-            else:
-                # If no permutation is defined, set orientation to None
-                PART_WITH_ORIENTATION = None
+        else:
+            # If no permutation is defined, set orientation to None
+            PART_WITH_ORIENTATION = None
             
 
     return pimap, PART_PERMUTATION, PART_WITH_ORIENTATION

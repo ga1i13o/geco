@@ -111,11 +111,17 @@ class Evaluation():
                 n_total_05[key] += n_total_05_cat[key]
                 n_total_10[key] += n_total_10_cat[key]
                 n_total_15[key] += n_total_15_cat[key]
-        
+            kks = [f'per point PCK@0.1 {cat}', f'per point PCK@0.05 {cat}']
+            for kk in kks:
+                print(kk, results[kk])
+
         # per point PCK (over all categories)
         for n_total, alph in zip([n_total_10, n_total_05, n_total_15], ['0.1', '0.05', '0.15']):
             results_alph = get_per_point_pck(n_total, '', alph)
             results.update(results_alph)
+        kks = ['per point PCK@0.1 ', 'per point PCK@0.05 ']
+        for kk in kks:
+            print(kk, results[kk])
 
         if self.split in ['train', 'val']:
             results = self.add_suffix(results, f'_{self.split}')
@@ -125,7 +131,7 @@ class Evaluation():
             results = self.add_suffix(results, f'_{suffix}')
         if self.epoch is not None:
             results['epoch'] = self.epoch
-        log_wandb(results)
+        # log_wandb(results)
         self.results_pck = results
 
     @torch.no_grad()

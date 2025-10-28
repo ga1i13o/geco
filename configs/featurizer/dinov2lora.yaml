@@ -1,7 +1,7 @@
 defaults:
  - dinov2
 model: 'dinov2lora'
-model_out_path: '<model-output-path>'
+model_out_path: '/data/gtrivigno/point_track/geco/pretrained_weights'
 lora_rank: 10
 
 init:

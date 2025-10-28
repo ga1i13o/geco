@@ -1,20 +1,21 @@
 defaults:
   - dataset/spair # ['apk', 'cub', 'spair', 'pfpascal']
-  - dataset/apk@dataset1
-  - dataset/cub@dataset2
-  - dataset/pfpascal@dataset3
+  # - dataset/apk@dataset1
+  # - dataset/cub@dataset2
+  # - dataset/pfpascal@dataset3
   - featurizer/dinov2lora # which model to use can be one of ['dift_sd', 'dift_adm', 'open_clip', 'dino', 'dinov2', 'sd15ema_dinov2, 'dinov2lora']
 
 dataset:
   sup: sup_original # ['sup_augmented', 'sup_original']
-dataset1:
-  sup: sup_original # ['sup_augmented', 'sup_original']
-dataset2:
-  sup: sup_original # ['sup_augmented', 'sup_original']
-dataset3:
-  sup: sup_original # ['sup_augmented', 'sup_original']
+# dataset1:
+#   sup: sup_original # ['sup_augmented', 'sup_original']
+# dataset2:
+#   sup: sup_original # ['sup_augmented', 'sup_original']
+# dataset3:
+#   sup: sup_original # ['sup_augmented', 'sup_original']
 
 # PCK
 upsample: True
 alpha_bbox: False
+# alpha_bbox: True
 n_pairs_eval_pck: 10000

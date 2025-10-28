@@ -40,54 +40,54 @@ def viz_pck_alpha(dataset, idx, data, src_to_trg_point, heatmap_, store_path, co
 def update_counters_pck_alpha(dataset, idx, data, src_to_trg_point, threshold, alpha, match_vis, symm_vis, n_img):
     # match visible, symmcounterpart visible in the target image
     if match_vis and symm_vis:
-            key = '11'
-            n_img['11'] += 1
-            trg_point = data['trg_kps'][idx]
-            dist = ((src_to_trg_point[0] - trg_point[0]) ** 2 + (src_to_trg_point[1] - trg_point[1]) ** 2) ** 0.5
-            # only symm counterpart is visible in the target image
-            trg_point_symm = data['trg_kps_symm_only'][idx]
-            dist_symm = ((src_to_trg_point[0] - trg_point_symm[0]) ** 2 + (src_to_trg_point[1] - trg_point_symm[1]) ** 2) ** 0.5
-            if (dist / threshold) <= alpha:
-                n_img['11_hat'] += 1
-                if (dist_symm / threshold) <= alpha:
-                    n_img['11_tilde'] +=1
-            elif (dist_symm / threshold) <= alpha:
-                n_img['11_overline'] +=1
+        key = '11'
+        n_img['11'] += 1
+        trg_point = data['trg_kps'][idx]
+        dist = ((src_to_trg_point[0] - trg_point[0]) ** 2 + (src_to_trg_point[1] - trg_point[1]) ** 2) ** 0.5
+        # only symm counterpart is visible in the target image
+        trg_point_symm = data['trg_kps_symm_only'][idx]
+        dist_symm = ((src_to_trg_point[0] - trg_point_symm[0]) ** 2 + (src_to_trg_point[1] - trg_point_symm[1]) ** 2) ** 0.5
+        if (dist / threshold) <= alpha:
+            n_img['11_hat'] += 1
+            if (dist_symm / threshold) <= alpha:
+                n_img['11_tilde'] +=1
+        elif (dist_symm / threshold) <= alpha:
+            n_img['11_overline'] +=1
 
     # match visible, symmcounterpart not visible in the target image
     if match_vis and not symm_vis:
-            trg_point = data['trg_kps'][idx]
-            dist = ((src_to_trg_point[0] - trg_point[0]) ** 2 + (src_to_trg_point[1] - trg_point[1]) ** 2) ** 0.5
-            has_orient = dataset.KP_WITH_ORIENTATION[idx] if dataset.pck_symm else False
-            if not has_orient:
-            # symmcounterpart does not exist
-                key = '1x'
-                n_img['1x'] += 1
-                if (dist / threshold) <= alpha:
-                    n_img['1x_hat'] += 1
-            else:
-                # symmcounterpart occluded
-                key = '10'
-                n_img['10'] += 1
-                if (dist / threshold) <= alpha:
-                    n_img['10_hat'] += 1
+        trg_point = data['trg_kps'][idx]
+        dist = ((src_to_trg_point[0] - trg_point[0]) ** 2 + (src_to_trg_point[1] - trg_point[1]) ** 2) ** 0.5
+        has_orient = dataset.KP_WITH_ORIENTATION[idx] if dataset.pck_symm else False
+        if not has_orient:
+        # symmcounterpart does not exist
+            key = '1x'
+            n_img['1x'] += 1
+            if (dist / threshold) <= alpha:
+                n_img['1x_hat'] += 1
+        else:
+            # symmcounterpart occluded
+            key = '10'
+            n_img['10'] += 1
+            if (dist / threshold) <= alpha:
+                n_img['10_hat'] += 1
 
     # match not visible, symmcounterpart visible in the target image
     if not match_vis and symm_vis:
         # calculate the distance between the symmetrical point (neg match) in the target image and the predicted point
-            # only symm counterpart is visible in the target image
-            key = '01'
-            n_img['01'] += 1
-            trg_point_symm = data['trg_kps_symm_only'][idx]
-            dist_symm = ((src_to_trg_point[0] - trg_point_symm[0]) ** 2 + (src_to_trg_point[1] - trg_point_symm[1]) ** 2) ** 0.5
-            if (dist_symm / threshold) <= alpha:
-                n_img['01_overline'] += 1
+        # only symm counterpart is visible in the target image
+        key = '01'
+        n_img['01'] += 1
+        trg_point_symm = data['trg_kps_symm_only'][idx]
+        dist_symm = ((src_to_trg_point[0] - trg_point_symm[0]) ** 2 + (src_to_trg_point[1] - trg_point_symm[1]) ** 2) ** 0.5
+        if (dist_symm / threshold) <= alpha:
+            n_img['01_overline'] += 1
             
     # match not visible, symmcounterpart not visible in the target image
     if not match_vis and not symm_vis:
-            # no match is visible in the target image
-            key = '00'
-            n_img['00'] += 1
+        # no match is visible in the target image
+        key = '00'
+        n_img['00'] += 1
 
     return n_img, key
 

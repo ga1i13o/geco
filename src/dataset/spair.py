@@ -120,11 +120,11 @@ class SpairDataset2Orig(SpairDatasetSingle):
         self.pairs = {}
         self.return_imgs = False
         self.return_masks = False
-        try:
-            splt = 'trn' if self.split=="train" else self.split
-            with open(os.path.join(self.root, self.annotation_path, splt+".json"), "r") as fp:
-                self.pairs = json.load(fp)
-        except:
+        # try:
+        splt = 'trn' if self.split=="train" else self.split
+        with open(os.path.join(self.root, self.annotation_path, splt+".json"), "r") as fp:
+            self.pairs = json.load(fp)
+        # except:
             # self.find_idx_pairs()
             pass
 
